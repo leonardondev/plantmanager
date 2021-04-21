@@ -1,13 +1,31 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { EnvironmentButton } from '../components/EnvironmentButton';
 
+import api from '../services/api';
 import { Header } from '../components/Header';
 
 import colors from '../styles/colors';
 import fonts from '../styles/fonts';
 
+interface Environment {
+  key: string;
+  title: string;
+}
+
 export function PlantSelect() {
+  const [environments,setEnvironments] = useState<Environment[]>();
+  
+
+  useEffect(() => {
+     api.get('/plants_environments').then(response => {
+      setEnvironments([
+        { key: 'all', title: 'Todos' },
+        ...response.data
+      ])
+     })
+  },[]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -24,9 +42,9 @@ export function PlantSelect() {
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.environmentList}
-        data={[1,2,3,4,5]}
-        renderItem={() => (
-          <EnvironmentButton title="Sala" />
+        data={environments}
+        renderItem={({item }) => (
+          <EnvironmentButton title={item.title} />
         )}
       >
 
