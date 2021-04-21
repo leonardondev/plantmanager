@@ -6,7 +6,9 @@ import {
   Jost_400Regular,
   Jost_600SemiBold,
 } from '@expo-google-fonts/jost';
-import { Welcome } from './src/pages/Welcome'
+
+// import { Welcome } from './src/pages/Welcome'
+import { UserIdentification } from './src/pages/UserIdentification'
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -20,8 +22,9 @@ export default function App() {
   else {
     return (
       <>
-        {/* <StatusBar style="auto" /> */}
-        <Welcome />
+        <StatusBar style="auto" />
+        {/* <Welcome /> */}
+        <UserIdentification />
       </>
     );
   }
