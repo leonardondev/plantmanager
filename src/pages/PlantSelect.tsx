@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { EnvironmentButton } from '../components/EnvironmentButton';
 import { Header } from '../components/Header';
+import { Load } from '../components/Load';
 import { PlantCardPrimary } from '../components/PlantCardPrimary';
 import api from '../services/api';
 import colors from '../styles/colors';
@@ -30,6 +31,8 @@ export function PlantSelect() {
   const [plants,setPlants] = useState<Plant[]>([]);
   const [filteredPlants,setFilteredPlants] = useState<Plant[]>([]);
   const [environmentSelected,setEnvironmentSelected] = useState('all');
+  const [loading,setloading] = useState(true);
+  
   
   useEffect(() => {
      api.get('/plants_environments?_sort=title&_order=asc')
@@ -45,6 +48,7 @@ export function PlantSelect() {
     api.get('/plants?_sort=name&_order=asc').then(response => {
       setPlants(response.data)
       setFilteredPlants(response.data)
+      setloading(false)
     })
   },[]);
 
@@ -61,50 +65,49 @@ export function PlantSelect() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Header title="Olá" titleBold="Leonardo" />
-        <Text style={styles.title}>
-          Em qual hambiente
-        </Text>
-        <Text style={styles.subtitle}>
-          você quer colocar sua planta?
-        </Text>
-      </View>
+    loading ? (<Load />) : (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <Header title="Olá" titleBold="Leonardo" />
+          <Text style={styles.title}>
+            Em qual hambiente
+          </Text>
+          <Text style={styles.subtitle}>
+            você quer colocar sua planta?
+          </Text>
+        </View>
 
-      <View>
-        <FlatList
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.environmentList}
-          data={environments}
-          renderItem={({item }) => (
-            <EnvironmentButton
-              title={item.title}
-              active={item.key === environmentSelected}
-              onPress={() => handleEnvironmentSelected(item.key)}
-            />
-          )}
-        >
-        </FlatList>
-      </View>
-        
-      <View style={styles.plants}>
-        <FlatList
-          numColumns={2}
-          showsVerticalScrollIndicator={false}
-          data={filteredPlants}
-          keyExtractor={item => String(item.id)}
-          renderItem={({ item }) => (
-            <PlantCardPrimary data={item} />
-          )}
-        >      
-        </FlatList>
-      </View>
-
-
-
-    </SafeAreaView>
+        <View>
+          <FlatList
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.environmentList}
+            data={environments}
+            renderItem={({item }) => (
+              <EnvironmentButton
+                title={item.title}
+                active={item.key === environmentSelected}
+                onPress={() => handleEnvironmentSelected(item.key)}
+              />
+            )}
+          >
+          </FlatList>
+        </View>
+          
+        <View style={styles.plants}>
+          <FlatList
+            numColumns={2}
+            showsVerticalScrollIndicator={false}
+            data={filteredPlants}
+            keyExtractor={item => String(item.id)}
+            renderItem={({ item }) => (
+              <PlantCardPrimary data={item} />
+            )}
+          >      
+          </FlatList>
+        </View>
+      </SafeAreaView>
+    )
   );
 }
 
