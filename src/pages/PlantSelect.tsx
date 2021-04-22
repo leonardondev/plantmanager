@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { EnvironmentButton } from '../components/EnvironmentButton';
-
-import api from '../services/api';
 import { Header } from '../components/Header';
-
+import { PlantCardPrimary } from '../components/PlantCardPrimary';
+import api from '../services/api';
 import colors from '../styles/colors';
 import fonts from '../styles/fonts';
-import { PlantCardPrimary } from '../components/PlantCardPrimary';
 
 interface Environment {
   key: string;
@@ -27,10 +25,11 @@ interface Plant {
   }
 }
 
-
 export function PlantSelect() {
-  const [environments,setEnvironments] = useState<Environment[]>();
-  const [plants,setPlants] = useState<Plant[]>();
+  const [environments,setEnvironments] = useState<Environment[]>([]);
+  const [plants,setPlants] = useState<Plant[]>([]);
+  const [filteredPlants,setFilteredPlants] = useState<Plant[]>([]);
+  const [environmentSelected,setEnvironmentSelected] = useState('all');
   
   useEffect(() => {
      api.get('/plants_environments?_sort=title&_order=asc')
@@ -45,8 +44,21 @@ export function PlantSelect() {
   useEffect(() => {
     api.get('/plants?_sort=name&_order=asc').then(response => {
       setPlants(response.data)
+      setFilteredPlants(response.data)
     })
- },[]);
+  },[]);
+
+  function handleEnvironmentSelected(key: string) {
+    setEnvironmentSelected(key);
+
+    if(key === 'all') {
+      setFilteredPlants(plants);
+      return;
+    }
+
+    const filtered = plants.filter(plant => plant.environments.includes(key));
+    setFilteredPlants(filtered);
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -67,7 +79,11 @@ export function PlantSelect() {
           contentContainerStyle={styles.environmentList}
           data={environments}
           renderItem={({item }) => (
-            <EnvironmentButton title={item.title} />
+            <EnvironmentButton
+              title={item.title}
+              active={item.key === environmentSelected}
+              onPress={() => handleEnvironmentSelected(item.key)}
+            />
           )}
         >
         </FlatList>
@@ -77,7 +93,8 @@ export function PlantSelect() {
         <FlatList
           numColumns={2}
           showsVerticalScrollIndicator={false}
-          data={plants}
+          data={filteredPlants}
+          keyExtractor={item => String(item.id)}
           renderItem={({ item }) => (
             <PlantCardPrimary data={item} />
           )}
