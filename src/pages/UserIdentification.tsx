@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  Alert,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -11,9 +12,9 @@ import {
   View
 } from 'react-native';
 import { useNavigation } from '@react-navigation/core';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { Button } from '../components/Button';
-
 import colors from '../styles/colors';
 import fonts from '../styles/fonts';
 
@@ -34,14 +35,18 @@ export function UserIdentification() {
     setIsFocused(true);
     
   }
-
     
   function handleInputChange(value: string) {
     setIsFilled(!!value);
     setName(value);
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
+    if(!name) {
+      return Alert.alert('Faltou me dizer o seu nome 😢️');
+    }
+
+    await AsyncStorage.setItem("@plantmanager:user", name);
     navigation.navigate('Confirmation');
   }
 

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ActivityIndicator, FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { EnvironmentButton } from '../components/EnvironmentButton';
 import { Header } from '../components/Header';
@@ -34,7 +35,8 @@ export function PlantSelect() {
   const [loading,setloading] = useState(true);
   const [page,setPage] = useState(1);
   const [loadingMore,setLoadingMore] = useState(true);
-  const [loadedAll,setLoadedAll] = useState(false);
+  const [username,setUsername] = useState('');
+  
   
   async function fetchPlants() {
     const { data } = await api.get(`/plants?_sort=name&_order=asc&_page=${page}&_limit=8`);
@@ -62,6 +64,11 @@ export function PlantSelect() {
       { key: 'all', title: 'Todos' },
       ...data
     ]);
+  }
+
+  async function loadStorageUserName() {
+    const user = await AsyncStorage.getItem("@plantmanager:user");
+    setUsername(user || '');
   }
 
   function handleEnvironmentSelected(key: string) {
@@ -95,12 +102,16 @@ export function PlantSelect() {
     fetchPlants();
   },[]);
 
+  useEffect(() => {
+     loadStorageUserName();
+  },[]);
+  
 
   return (
     loading ? (<Load />) : (
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
-          <Header title="Olá" titleBold="Leonardo" />
+          <Header title="Olá" titleBold={username} />
           <Text style={styles.title}>
             Em qual ambiente
           </Text>
@@ -115,6 +126,7 @@ export function PlantSelect() {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.environmentList}
             data={environments}
+            keyExtractor={item => String(item.key)}
             renderItem={({item }) => (
               <EnvironmentButton
                 title={item.title}
