@@ -9,24 +9,11 @@ import { PlantCardPrimary } from '../components/PlantCardPrimary';
 import api from '../services/api';
 import colors from '../styles/colors';
 import fonts from '../styles/fonts';
+import { Plant } from '../libs/storage';
 
 interface Environment {
   key: string;
   title: string;
-}
-
-export interface Plant {
-  id: string;
-  name: string;
-  about: string;
-  water_tips: string;
-  photo: string;
-  environments: Array<string>;
-  frequency: {
-    times: number;
-    repeat_every: string;
-  }
-  dateTimeNotification: Date;
 }
 
 export function PlantSelect() {

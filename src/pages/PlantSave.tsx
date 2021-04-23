@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import { Alert, StyleSheet, Text, View, Image, ScrollView, Platform, TouchableOpacity} from 'react-native'
+import { Alert, StyleSheet, Text, View, Image, Platform, TouchableOpacity} from 'react-native'
 import { SvgFromUri } from 'react-native-svg'
+import { format, isBefore } from 'date-fns';
 import { getBottomSpace } from 'react-native-iphone-x-helper';
 import { useRoute } from '@react-navigation/core';
 import DateTimePicker, { Event } from '@react-native-community/datetimepicker';
 
 import { Button } from '../components/Button';
+import { Plant, savePlant } from '../libs/storage';
 import waterdrop from '../assets/waterdrop.png' 
 import colors from '../styles/colors';
 import fonts from '../styles/fonts';
 
-import { Plant } from './PlantSelect';
-import { format, isBefore } from 'date-fns';
 
 interface Params {
   plant: Plant;
@@ -43,6 +43,17 @@ export function PlantSave() {
     setShowDatePicker(oldState => !oldState);
   }
 
+  async function handleSave() {
+    try {
+      await savePlant({
+        ...plant,
+        dateTimeNotification: selectedDateTime,
+      })
+    } catch (error) {
+      return Alert.alert('Não foi possivel salvar. 😢️')
+    }
+  }
+  
   return (
     <View style={styles.container}>
       <View style={styles.plantInfo}>
@@ -83,7 +94,7 @@ export function PlantSave() {
 
         <Button
           title="Cadastrar plantas"
-          onPress={() => {}}
+          onPress={handleSave}
         />
       </View>
     </View>
