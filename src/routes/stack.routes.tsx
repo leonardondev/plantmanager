@@ -9,6 +9,7 @@ import { PlantSave } from '../pages/PlantSave'
 import { MyPlants } from '../pages/MyPlants';
 
 import colors from '../styles/colors';
+import AuthRoutes from './tab.routes';
 const Stack = createStackNavigator();
 
 const StackRoutes: React.FC = () => {
@@ -33,9 +34,10 @@ const StackRoutes: React.FC = () => {
         name="Confirmation"
         component={Confirmation}
       />
+
       <Stack.Screen
         name="PlantSelect"
-        component={PlantSelect}
+        component={AuthRoutes}
       />
       <Stack.Screen
         name="PlantSave"
@@ -43,7 +45,7 @@ const StackRoutes: React.FC = () => {
       />
       <Stack.Screen
         name="MyPlants"
-        component={MyPlants}
+        component={AuthRoutes}
       />
     </Stack.Navigator>
   );
