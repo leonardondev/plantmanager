@@ -7,8 +7,8 @@ import fonts from '../styles/fonts';
 import userImg from '../assets/leonardo.png';
 
 interface HeaderProps {
-  title: string;
-  titleBold: string
+  title?: string;
+  titleBold?: string
 }
 
 export function Header({ title = "Minhas", titleBold = "Plantinhas" }: HeaderProps) {
