@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/core';
 import { ActivityIndicator, FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { EnvironmentButton } from '../components/EnvironmentButton';
 import { Header } from '../components/Header';
@@ -14,7 +15,7 @@ interface Environment {
   title: string;
 }
 
-interface Plant {
+export interface Plant {
   id: string;
   name: string;
   about: string;
@@ -37,6 +38,7 @@ export function PlantSelect() {
   const [loadingMore,setLoadingMore] = useState(true);
   const [username,setUsername] = useState('');
   
+  const navigation = useNavigation();
   
   async function fetchPlants() {
     const { data } = await api.get(`/plants?_sort=name&_order=asc&_page=${page}&_limit=8`);
@@ -81,6 +83,10 @@ export function PlantSelect() {
 
     const filtered = plants.filter(plant => plant.environments.includes(key));
     setFilteredPlants(filtered);
+  }
+
+  function handlePlantSelected(plant: Plant) {
+    navigation.navigate('PlantSave', { plant });
   }
 
   function handleFetchMore(distance: number) {
@@ -145,7 +151,10 @@ export function PlantSelect() {
             data={filteredPlants}
             keyExtractor={item => String(item.id)}
             renderItem={({ item }) => (
-              <PlantCardPrimary data={item} />
+              <PlantCardPrimary
+                data={item}
+                onPress={() => handlePlantSelected(item)}
+              />
             )}
             onEndReachedThreshold={0.1}
             onEndReached={({ distanceFromEnd }) => handleFetchMore(distanceFromEnd)}
